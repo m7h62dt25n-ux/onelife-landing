@@ -674,11 +674,13 @@ function pinHTML(spot, active){
   </div>`;
 }
 function makePlacemark(spot){
-  return new ymaps.Placemark([spot.lat,spot.lng],
+  const pm = new ymaps.Placemark([spot.lat,spot.lng],
     {pinHtml: pinHTML(spot, spot.id===activeSpotId)},
     {iconLayout: PinLayout,
      iconShape: {type:'Rectangle', coordinates:[[-15,-28],[15,2]]},
      hideIconOnBalloonOpen:false});
+  pm.events.add('click',()=>selectSpot(spot.id,{pan:false}));
+  return pm;
 }
 function setPinState(id, active){
   const spot = SPOTS.find(s=>s.id===id);
@@ -737,7 +739,12 @@ function showMapFallback(){
     </div>`;
 }
 document.addEventListener('click',e=>{
-  const pin = e.target.closest('[data-spot-pin]');
+  let pin = e.target.closest('[data-spot-pin]');
+  if(!pin && e.target.closest('#map')){
+    // слой событий Яндекс.Карт перекрывает пины — ищем пин под точкой клика
+    pin = document.elementsFromPoint(e.clientX, e.clientY)
+      .find(el=>el.matches && el.matches('[data-spot-pin]'));
+  }
   if(pin) selectSpot(pin.dataset.spotPin,{pan:false});
 });
 (function loadYmaps(){
