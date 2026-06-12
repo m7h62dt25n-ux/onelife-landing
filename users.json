@@ -1,0 +1,11 @@
+{
+  "users": [
+    {
+      "login": "demo",
+      "hash": "95f173229820ee97dafa983f561360b7fcd3ba4aff742b86a6df223d4bcaf684",
+      "until": "2026-07-12",
+      "tg_id": 0,
+      "created": "2026-06-13"
+    }
+  ]
+}

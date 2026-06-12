@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Клёвое Место PRO — карта рыбалки Краснодарского края</title>
-<meta name="description" content="Платное приложение для рыбаков: карта точек клёва всего Краснодарского края — море, Кубань, лиманы, водохранилища. Хищник, мирная и морская рыба, прогноз клёва.">
+<title>Клёвое Место PRO — где клюёт в Краснодарском крае</title>
+<meta name="description" content="Приложение для рыбаков: 29 проверенных точек клёва по всему Краснодарскому краю, прогноз клёва на 7 дней, календарь по 18 видам рыбы. Подписка через Telegram.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -23,980 +23,427 @@
     --liman:#2DD4BF;
     --resv:#A78BFA;
     --pond:#F59E0B;
-    --radius:16px;
     --font-head:'Unbounded',sans-serif;
     --font-body:'Manrope',sans-serif;
-    --appbar-h:64px;
   }
   *{margin:0;padding:0;box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    background:var(--bg);color:var(--text);
-    font-family:var(--font-body);font-size:16px;line-height:1.55;
-    overflow:hidden;
-  }
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:16px;line-height:1.6;overflow-x:hidden}
   ::selection{background:rgba(234,179,8,.35)}
   button{font-family:inherit;cursor:pointer}
   a{color:inherit;text-decoration:none}
   :focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:6px}
 
+  .glow{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0}
+  .glow-1{width:520px;height:520px;background:rgba(234,179,8,.07);top:-180px;right:-120px}
+  .glow-2{width:480px;height:480px;background:rgba(56,189,248,.05);top:45vh;left:-200px}
+
   .btn{
-    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    display:inline-flex;align-items:center;justify-content:center;gap:9px;
     border:none;border-radius:999px;font-weight:700;font-size:15px;
-    padding:12px 24px;transition:background-color .2s,color .2s,box-shadow .2s,border-color .2s;
+    padding:14px 28px;transition:background-color .2s,color .2s,box-shadow .2s,border-color .2s;
   }
   .btn-gold{background:var(--gold);color:#1C1304}
   .btn-gold:hover{background:#FACC15;box-shadow:0 6px 28px rgba(234,179,8,.35)}
   .btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border-strong)}
   .btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
-  .btn-sm{padding:8px 16px;font-size:13.5px}
-  .tag{padding:3px 10px;border-radius:999px;font-size:11.5px;font-weight:700;border:1px solid;white-space:nowrap}
-  .tag-sea{color:var(--sea);border-color:rgba(56,189,248,.35);background:rgba(56,189,248,.08)}
-  .tag-river{color:var(--river);border-color:rgba(74,222,128,.35);background:rgba(74,222,128,.08)}
-  .tag-liman{color:var(--liman);border-color:rgba(45,212,191,.35);background:rgba(45,212,191,.08)}
-  .tag-resv{color:var(--resv);border-color:rgba(167,139,250,.4);background:rgba(167,139,250,.08)}
-  .tag-pond{color:var(--pond);border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.08)}
+  .btn-sm{padding:10px 20px;font-size:14px}
 
-  /* ================= APP SHELL ================= */
-  #app{height:100%;display:flex;flex-direction:column;transition:filter .3s}
-  #app.locked{filter:blur(14px) brightness(.6);pointer-events:none;user-select:none}
-
-  .appbar{
-    height:var(--appbar-h);flex:none;z-index:1100;
-    display:flex;align-items:center;gap:18px;padding:0 18px;
-    background:rgba(12,10,9,.85);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
-    border-bottom:1px solid var(--border);
+  /* nav */
+  .nav{
+    position:fixed;top:16px;left:16px;right:16px;z-index:1000;
+    max-width:1140px;margin:0 auto;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+    padding:12px 20px;border-radius:999px;
+    background:rgba(12,10,9,.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    border:1px solid var(--border);
   }
-  .logo{display:flex;align-items:center;gap:9px;font-family:var(--font-head);font-size:13.5px;font-weight:700;letter-spacing:.04em;flex:none}
+  .logo{display:flex;align-items:center;gap:10px;font-family:var(--font-head);font-size:14px;font-weight:700;letter-spacing:.04em}
   .logo span{color:var(--gold)}
   .logo .pro-badge{font-size:9px;background:var(--gold);color:#1C1304;padding:2px 7px;border-radius:99px;letter-spacing:.08em}
-  .tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:4px;flex:none}
-  .tab{padding:7px 18px;border-radius:999px;font-size:13.5px;font-weight:700;color:var(--muted);background:transparent;border:none;transition:background-color .2s,color .2s}
-  .tab:hover{color:var(--text)}
-  .tab.active{background:var(--gold);color:#1C1304}
-  .appbar .search{
-    flex:1;max-width:430px;display:flex;align-items:center;gap:9px;
-    padding:9px 16px;border-radius:999px;
-    background:var(--surface);border:1px solid var(--border);transition:border-color .2s;
-  }
-  .appbar .search:focus-within{border-color:var(--gold)}
-  .appbar .search svg{flex:none;color:var(--muted)}
-  .appbar .search input{flex:1;min-width:0;background:transparent;border:none;outline:none;color:var(--text);font-family:inherit;font-size:14.5px}
-  .appbar .search input::placeholder{color:#78716C}
-  .sub-chip{
-    margin-left:auto;display:flex;align-items:center;gap:9px;flex:none;
-    padding:7px 14px;border-radius:999px;font-size:12.5px;font-weight:700;
-    background:rgba(234,179,8,.08);border:1px solid rgba(234,179,8,.3);color:var(--gold);
-  }
-  .sub-chip svg{flex:none}
-  .sub-chip button{background:none;border:none;color:var(--muted);font-size:11.5px;font-weight:700;text-decoration:underline;padding:0}
-  .sub-chip button:hover{color:var(--text)}
+  .nav-links{display:flex;gap:24px;font-size:14px;font-weight:600;color:var(--muted)}
+  .nav-links a{transition:color .2s}
+  .nav-links a:hover{color:var(--text)}
+  .nav-cta{display:flex;gap:10px}
 
-  /* ================= MAP VIEW ================= */
-  .view{flex:1;min-height:0;display:none}
-  .view.active{display:flex}
-  #view-map{gap:0}
-  .side{
-    width:392px;flex:none;display:flex;flex-direction:column;min-height:0;
-    border-right:1px solid var(--border);background:rgba(255,255,255,.015);
+  .wrap{max-width:1140px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+
+  /* hero */
+  .hero{padding:160px 0 70px;text-align:center}
+  .hero-badge{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:7px 16px;border-radius:999px;font-size:13px;font-weight:600;color:var(--gold);
+    background:rgba(234,179,8,.08);border:1px solid rgba(234,179,8,.25);margin-bottom:26px;
   }
-  .filters{padding:14px 16px 10px;display:flex;flex-wrap:wrap;gap:8px;border-bottom:1px solid var(--border)}
-  .chip{
-    padding:7px 14px;border-radius:999px;font-size:12.5px;font-weight:700;
-    background:var(--surface);border:1px solid var(--border);color:var(--muted);
-    transition:background-color .2s,color .2s,border-color .2s;
+  .hero h1{font-family:var(--font-head);font-weight:700;font-size:clamp(28px,5vw,54px);line-height:1.15;margin-bottom:20px}
+  .hero h1 em{font-style:normal;color:var(--gold)}
+  .hero>.wrap>p{max-width:600px;margin:0 auto 34px;color:var(--muted);font-size:clamp(16px,2vw,18px)}
+  .hero-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:18px}
+  .hero-note{font-size:13px;color:#78716C;margin-bottom:46px}
+  .hero-stats{display:flex;justify-content:center;gap:clamp(24px,6vw,64px);flex-wrap:wrap}
+  .stat b{display:block;font-family:var(--font-head);font-size:clamp(20px,3vw,30px);color:var(--gold)}
+  .stat span{font-size:13px;color:var(--muted)}
+
+  /* app preview mock */
+  .mock{
+    margin:60px auto 0;max-width:920px;border-radius:20px;overflow:hidden;
+    border:1px solid var(--border-strong);box-shadow:0 40px 120px rgba(0,0,0,.55);
+    background:#13100D;
   }
-  .chip:hover{color:var(--text);border-color:var(--border-strong)}
-  .chip.active{background:var(--gold);border-color:var(--gold);color:#1C1304}
-  .chip .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;vertical-align:1px}
-  .fish-select{
-    width:100%;padding:9px 38px 9px 14px;border-radius:12px;font-size:13.5px;font-weight:600;
-    background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23A8A29E' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center;
-    border:1px solid var(--border);color:var(--text);
-    appearance:none;-webkit-appearance:none;cursor:pointer;font-family:inherit;
+  .mock-bar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--border)}
+  .mock-bar i{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.12)}
+  .mock-bar i:first-child{background:rgba(248,113,113,.5)}
+  .mock-bar i:nth-child(2){background:rgba(234,179,8,.5)}
+  .mock-bar i:nth-child(3){background:rgba(74,222,128,.5)}
+  .mock-bar span{margin-left:8px;font-size:11.5px;color:var(--muted);font-weight:600}
+  .mock-body{display:grid;grid-template-columns:240px 1fr;min-height:330px}
+  .mock-side{border-right:1px solid var(--border);padding:14px;display:flex;flex-direction:column;gap:9px}
+  .mock-chiprow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
+  .mock-chip{padding:4px 10px;border-radius:99px;font-size:10px;font-weight:700;background:var(--surface);border:1px solid var(--border);color:var(--muted)}
+  .mock-chip.on{background:var(--gold);color:#1C1304;border-color:var(--gold)}
+  .mock-card{border-radius:12px;padding:10px 12px;background:var(--surface);border:1px solid var(--border)}
+  .mock-card b{display:block;font-size:11.5px;margin-bottom:4px}
+  .mock-card span{font-size:10px;color:var(--muted)}
+  .mock-card .hot{color:#F87171;font-weight:700}
+  .mock-map{
+    position:relative;
+    background:
+      radial-gradient(220px 140px at 70% 30%,rgba(56,189,248,.12),transparent),
+      radial-gradient(260px 160px at 25% 70%,rgba(74,222,128,.08),transparent),
+      #100E0C;
   }
-  .fish-select option,.fish-select optgroup{background:#1C1917;color:var(--text)}
-  .list-meta{padding:10px 16px 4px;font-size:12px;color:var(--muted);font-weight:600}
-  .spot-list{
-    flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:8px 16px 16px;
-    scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.18) transparent;
+  .mock-pin{position:absolute;width:26px;height:26px;border-radius:50% 50% 50% 4px;transform:rotate(-45deg);border:2px solid rgba(255,255,255,.85);box-shadow:0 4px 12px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center}
+  .mock-pin svg{transform:rotate(45deg)}
+  .mock-panel{
+    position:absolute;right:14px;top:14px;width:180px;border-radius:14px;padding:12px;
+    background:rgba(15,12,10,.94);border:1px solid var(--border-strong);
   }
-  .spot-list::-webkit-scrollbar{width:5px}
-  .spot-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:99px}
-  .spot-card{
-    position:relative;text-align:left;border-radius:var(--radius);padding:14px;
-    background:var(--surface);border:1px solid var(--border);
-    transition:border-color .2s,background-color .2s;cursor:pointer;
-  }
-  .spot-card:hover{border-color:var(--border-strong);background:var(--surface-strong)}
-  .spot-card.active{border-color:var(--gold);background:rgba(234,179,8,.06)}
-  .spot-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:6px}
-  .spot-name{font-weight:800;font-size:14.5px;line-height:1.3;color:var(--text);padding-right:26px}
-  .spot-rating{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:700;color:var(--gold);flex:none}
-  .spot-meta{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
-  .bite{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700}
-  .bite-3{color:#F87171}.bite-2{color:var(--gold)}.bite-1{color:var(--muted)}.bite-0{color:#57534E}
-  .fav-btn{
-    position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;
+  .mock-panel b{font-size:11px;display:block;margin-bottom:6px}
+  .mock-fc{display:flex;gap:3px;align-items:flex-end;height:42px}
+  .mock-fc i{flex:1;border-radius:3px 3px 1px 1px;background:linear-gradient(180deg,var(--gold),rgba(234,179,8,.45))}
+
+  /* sections */
+  section{position:relative;z-index:1}
+  .sec{padding:80px 0}
+  .sec-tag{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+  .sec-title{font-family:var(--font-head);font-size:clamp(22px,3.4vw,36px);font-weight:700;line-height:1.2;margin-bottom:14px}
+  .sec-sub{color:var(--muted);max-width:620px;margin-bottom:40px}
+
+  .feats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .feat{border-radius:18px;padding:24px;background:var(--surface);border:1px solid var(--border);transition:border-color .2s}
+  .feat:hover{border-color:var(--border-strong)}
+  .feat svg{color:var(--gold);margin-bottom:14px}
+  .feat b{display:block;font-size:16px;font-weight:800;margin-bottom:8px}
+  .feat p{font-size:14px;color:var(--muted)}
+
+  /* how it works */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;counter-reset:step}
+  .step{border-radius:18px;padding:26px 24px;background:var(--surface);border:1px solid var(--border);position:relative}
+  .step::before{
+    counter-increment:step;content:counter(step);
     display:flex;align-items:center;justify-content:center;
-    background:transparent;border:none;color:#57534E;transition:color .2s;
+    width:36px;height:36px;border-radius:50%;margin-bottom:16px;
+    background:var(--gold);color:#1C1304;font-family:var(--font-head);font-weight:700;font-size:15px;
   }
-  .fav-btn:hover{color:var(--gold)}
-  .fav-btn.on{color:var(--gold)}
+  .step b{display:block;font-size:15.5px;font-weight:800;margin-bottom:8px}
+  .step p{font-size:14px;color:var(--muted)}
+  .step .tg{color:var(--sea);font-weight:700}
 
-  .map-area{flex:1;position:relative;min-width:0}
-  #map{width:100%;height:100%;background:#111}
-  #map [class*="ground-pane"]{filter:invert(1) hue-rotate(200deg) grayscale(.35) brightness(.85) contrast(.95)}
-  #map [class*="copyrights-pane"]{filter:invert(1) hue-rotate(180deg)}
-  .pin{
-    width:30px;height:30px;border-radius:50% 50% 50% 4px;transform:rotate(-45deg);
-    display:flex;align-items:center;justify-content:center;
-    border:2px solid rgba(255,255,255,.85);box-shadow:0 4px 12px rgba(0,0,0,.5);
-    cursor:pointer;transition:box-shadow .2s;
+  /* pricing */
+  .price-card{
+    max-width:520px;margin:0 auto;border-radius:26px;padding:clamp(28px,4vw,44px);text-align:center;
+    background:linear-gradient(160deg,rgba(234,179,8,.13),rgba(234,179,8,.03) 55%);
+    border:1px solid rgba(234,179,8,.45);
   }
-  .pin svg{transform:rotate(45deg)}
-  .pin-sea{background:#0C4A6E}.pin-river{background:#14532D}.pin-liman{background:#134E4A}
-  .pin-resv{background:#4C1D95}.pin-pond{background:#713F12}
-  .pin.pin-active{border-color:var(--gold);box-shadow:0 0 0 4px rgba(234,179,8,.35),0 4px 12px rgba(0,0,0,.5)}
+  .price-card .flag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.06em;background:var(--gold);color:#1C1304;padding:5px 14px;border-radius:99px;margin-bottom:18px}
+  .price-big{font-family:var(--font-head);font-size:clamp(38px,6vw,54px);font-weight:700}
+  .price-big small{font-size:16px;color:var(--muted);font-family:var(--font-body);font-weight:400}
+  .price-card .alt{color:var(--muted);font-size:13.5px;margin:6px 0 24px}
+  .price-card ul{list-style:none;text-align:left;display:flex;flex-direction:column;gap:11px;margin-bottom:28px;font-size:14.5px;max-width:380px;margin-left:auto;margin-right:auto}
+  .price-card li{display:flex;gap:10px;align-items:flex-start}
+  .price-card li svg{flex:none;margin-top:3px;color:var(--gold)}
+  .price-card .btn{width:100%;max-width:380px}
+  .price-note{margin-top:14px;font-size:12px;color:#78716C}
 
-  /* detail panel */
-  .detail{
-    position:absolute;top:14px;right:14px;z-index:900;width:340px;max-height:calc(100% - 28px);
-    overflow-y:auto;border-radius:var(--radius);padding:20px;
-    background:rgba(15,12,10,.94);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-    border:1px solid var(--border-strong);
-    transform:translateX(16px);opacity:0;visibility:hidden;
-    transition:transform .25s,opacity .25s,visibility .25s;
-    scrollbar-width:thin;
+  /* faq */
+  .faq{max-width:720px;margin:0 auto}
+  .faq details{
+    border-radius:14px;background:var(--surface);border:1px solid var(--border);
+    padding:18px 22px;margin-bottom:10px;transition:border-color .2s;
   }
-  .detail.open{transform:none;opacity:1;visibility:visible}
-  .detail-close{
-    position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;
-    background:var(--surface-strong);border:1px solid var(--border);color:var(--muted);
-    display:flex;align-items:center;justify-content:center;transition:color .2s,border-color .2s;
-  }
-  .detail-close:hover{color:var(--text);border-color:var(--border-strong)}
-  .detail h3{font-family:var(--font-head);font-size:16px;font-weight:700;line-height:1.35;margin:4px 64px 10px 0}
-  .detail-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:13px}
-  .detail p{font-size:13.5px;color:var(--muted);margin-bottom:14px}
-  .detail h4{font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
-  .fish-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
-  .fish-chip{
-    display:inline-flex;align-items:center;gap:6px;
-    padding:4px 11px;border-radius:999px;font-size:12px;font-weight:700;
-    background:var(--surface-strong);border:1px solid var(--border);
-  }
-  .fish-chip svg{color:var(--sea)}
-  .season-bar{display:flex;gap:3px;margin-bottom:5px}
-  .season-bar i{flex:1;height:20px;border-radius:5px;background:rgba(255,255,255,.06)}
-  .season-bar i.l1{background:rgba(234,179,8,.22)}
-  .season-bar i.l2{background:rgba(234,179,8,.55)}
-  .season-bar i.l3{background:var(--gold)}
-  .season-bar i.now{outline:2px solid #fff;outline-offset:1px}
-  .season-labels{display:flex;gap:3px;margin-bottom:14px}
-  .season-labels span{flex:1;text-align:center;font-size:9px;color:var(--muted);text-transform:uppercase}
-  .forecast{display:flex;gap:6px;margin-bottom:4px;align-items:flex-end;height:64px}
-  .fc-day{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;height:100%}
-  .fc-bar{width:100%;border-radius:5px 5px 2px 2px;background:linear-gradient(180deg,var(--gold),rgba(234,179,8,.45));min-height:4px}
-  .fc-bar.low{background:rgba(255,255,255,.12)}
-  .fc-val{font-size:9.5px;font-weight:800;color:var(--gold)}
-  .fc-val.low{color:var(--muted)}
-  .fc-labels{display:flex;gap:6px;margin-bottom:14px}
-  .fc-labels span{flex:1;text-align:center;font-size:9px;color:var(--muted);text-transform:uppercase}
-  .coords{
-    display:flex;align-items:center;justify-content:space-between;gap:10px;
-    padding:10px 13px;border-radius:12px;margin-bottom:12px;
-    background:var(--surface);border:1px dashed var(--border-strong);
-    font-size:13px;font-weight:700;letter-spacing:.02em;
-  }
-  .coords svg{flex:none;color:var(--gold)}
-  .detail .btn{width:100%}
+  .faq details:hover{border-color:var(--border-strong)}
+  .faq summary{font-weight:800;font-size:15px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary::after{content:'+';font-family:var(--font-head);color:var(--gold);font-size:18px;transition:transform .2s}
+  .faq details[open] summary::after{transform:rotate(45deg)}
+  .faq details p{margin-top:12px;color:var(--muted);font-size:14px}
 
-  /* ================= CALENDAR VIEW ================= */
-  #view-calendar{flex-direction:column;overflow-y:auto;padding:26px clamp(16px,4vw,40px)}
-  #view-calendar h2{font-family:var(--font-head);font-size:clamp(18px,2.6vw,26px);font-weight:700;margin-bottom:6px}
-  #view-calendar .sub{color:var(--muted);font-size:14px;margin-bottom:20px;max-width:640px}
-  .cal-scroll{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border);flex:none}
-  .cal{width:100%;border-collapse:collapse;min-width:860px;background:var(--surface)}
-  .cal th,.cal td{padding:9px 8px;text-align:center;font-size:13px;border-bottom:1px solid var(--border)}
-  .cal th{color:var(--muted);font-weight:700;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;background:rgba(255,255,255,.03)}
-  .cal td:first-child,.cal th:first-child{text-align:left;padding-left:18px;font-weight:700;color:var(--text);white-space:nowrap}
-  .cal tr:last-child td{border-bottom:none}
-  .cal th.now-col{color:var(--gold)}
-  .cal tr.cat td{background:rgba(234,179,8,.06);color:var(--gold);font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:7px 18px}
-  .cell{width:26px;height:13px;border-radius:4px;display:inline-block;background:rgba(255,255,255,.05)}
-  .cell.l1{background:rgba(234,179,8,.22)}
-  .cell.l2{background:rgba(234,179,8,.55)}
-  .cell.l3{background:var(--gold)}
-  .legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:14px;font-size:13px;color:var(--muted)}
-  .legend span{display:inline-flex;align-items:center;gap:7px}
-  .rules-note{margin-top:22px;font-size:12.5px;color:#78716C;max-width:720px;line-height:1.6}
+  /* final cta */
+  .final{
+    border-radius:26px;padding:clamp(30px,5vw,56px);text-align:center;
+    background:linear-gradient(150deg,rgba(234,179,8,.14),rgba(56,189,248,.06));
+    border:1px solid rgba(234,179,8,.3);
+  }
+  .final h2{font-family:var(--font-head);font-size:clamp(20px,3.2vw,32px);font-weight:700;margin-bottom:14px}
+  .final p{color:var(--muted);max-width:520px;margin:0 auto 28px}
 
-  /* ================= PAYWALL ================= */
-  .paywall{
-    position:fixed;inset:0;z-index:2000;overflow-y:auto;
-    background:radial-gradient(800px 500px at 70% -10%,rgba(234,179,8,.1),transparent),rgba(8,6,5,.55);
-    display:flex;align-items:flex-start;justify-content:center;padding:4vh 20px 40px;
-  }
-  .paywall[hidden]{display:none}
-  .pw-card{
-    width:100%;max-width:860px;border-radius:28px;padding:clamp(26px,4vw,48px);
-    background:#13100D;border:1px solid var(--border-strong);
-    box-shadow:0 40px 120px rgba(0,0,0,.6);
-  }
-  .pw-logo{display:flex;align-items:center;gap:10px;justify-content:center;font-family:var(--font-head);font-size:15px;font-weight:700;margin-bottom:22px}
-  .pw-logo span{color:var(--gold)}
-  .pw-card h1{font-family:var(--font-head);font-size:clamp(20px,3.2vw,30px);font-weight:700;text-align:center;line-height:1.25;margin-bottom:10px}
-  .pw-card h1 em{font-style:normal;color:var(--gold)}
-  .pw-sub{text-align:center;color:var(--muted);max-width:560px;margin:0 auto 26px;font-size:15px}
-  .pw-stats{display:flex;justify-content:center;gap:clamp(18px,4vw,48px);flex-wrap:wrap;margin-bottom:30px}
-  .pw-stats b{display:block;font-family:var(--font-head);font-size:22px;color:var(--gold);text-align:center}
-  .pw-stats span{font-size:12px;color:var(--muted)}
-  .pw-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:26px;align-items:start}
-  .pw-feats{list-style:none;display:flex;flex-direction:column;gap:12px;font-size:14.5px}
-  .pw-feats li{display:flex;gap:11px;align-items:flex-start}
-  .pw-feats li svg{flex:none;margin-top:2px;color:var(--gold)}
-  .plans{display:flex;flex-direction:column;gap:12px}
-  .plan{
-    border-radius:18px;padding:18px 20px;text-align:left;cursor:pointer;
-    background:var(--surface);border:1px solid var(--border);width:100%;
-    display:flex;align-items:center;gap:14px;transition:border-color .2s,background-color .2s;
-    color:var(--text);font-family:inherit;
-  }
-  .plan:hover{border-color:var(--border-strong)}
-  .plan.featured{background:linear-gradient(150deg,rgba(234,179,8,.14),rgba(234,179,8,.04));border-color:rgba(234,179,8,.5)}
-  .plan-info{flex:1}
-  .plan-info b{display:block;font-size:15px;font-weight:800}
-  .plan-info small{color:var(--muted);font-size:12.5px}
-  .plan-price{font-family:var(--font-head);font-size:19px;font-weight:700;white-space:nowrap}
-  .plan-price small{font-size:11px;color:var(--muted);font-family:var(--font-body)}
-  .plan .flag{font-size:10px;font-weight:800;background:var(--gold);color:#1C1304;padding:3px 9px;border-radius:99px;letter-spacing:.06em}
-  .pw-note{margin-top:18px;text-align:center;font-size:12px;color:#78716C}
+  footer{border-top:1px solid var(--border);position:relative;z-index:1;margin-top:80px}
+  .foot{max-width:1140px;margin:0 auto;padding:36px 24px;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;color:var(--muted);font-size:13px}
+  .foot-note{max-width:480px;line-height:1.55}
 
-  /* ================= PAYMENT MODAL ================= */
-  .modal-bg{
-    position:fixed;inset:0;z-index:2500;background:rgba(0,0,0,.72);
-    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
-    display:flex;align-items:center;justify-content:center;padding:20px;
-    opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s;
-  }
-  .modal-bg.open{opacity:1;visibility:visible}
-  .modal{
-    width:100%;max-width:400px;border-radius:24px;padding:30px;position:relative;
-    background:#171310;border:1px solid var(--border-strong);
-    transform:translateY(14px);transition:transform .25s;text-align:center;
-  }
-  .modal-bg.open .modal{transform:none}
-  .modal h3{font-family:var(--font-head);font-size:18px;font-weight:700;margin-bottom:8px}
-  .modal p{color:var(--muted);font-size:14px;margin-bottom:20px}
-  .modal .price-big{font-family:var(--font-head);font-size:34px;color:var(--gold);margin-bottom:4px}
-  .modal .btn{width:100%}
-  .spinner{
-    width:42px;height:42px;border-radius:50%;margin:8px auto 18px;
-    border:3px solid rgba(234,179,8,.2);border-top-color:var(--gold);
-    animation:spin .8s linear infinite;display:none;
-  }
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .pay-ok svg{color:var(--gold);margin:0 auto 14px;display:block}
-
-  /* ================= RESPONSIVE ================= */
-  @media (max-width:920px){
-    body{overflow:auto}
-    .appbar{flex-wrap:wrap;height:auto;padding:10px 14px;gap:10px}
-    .appbar .search{order:3;max-width:none;flex-basis:100%}
-    .sub-chip{margin-left:auto}
-    #view-map{flex-direction:column}
-    .side{width:100%;border-right:none;max-height:none}
-    .spot-list{flex-direction:row;overflow-x:auto;overflow-y:hidden;padding-bottom:12px}
-    .spot-card{flex:0 0 260px}
-    .map-area{height:62vh;flex:none}
-    .detail{width:calc(100% - 28px)}
-    .pw-grid{grid-template-columns:1fr}
+  @media (max-width:900px){
+    .nav-links{display:none}
+    .feats,.steps{grid-template-columns:1fr}
+    .mock-body{grid-template-columns:1fr}
+    .mock-side{display:none}
   }
   @media (prefers-reduced-motion:reduce){
     *,*::before,*::after{transition-duration:.01ms !important;animation-duration:.01ms !important}
+    html{scroll-behavior:auto}
   }
 </style>
 </head>
 <body>
 
-<!-- ================= APP ================= -->
-<div id="app" class="locked">
-  <header class="appbar">
-    <a class="logo" href="#" aria-label="Клёвое Место PRO">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EAB308" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M6.5 12c1.8-3.5 5-5.5 9-5.5 2 0 3.8.6 5 1.5-1.2 4.5-4.5 8-9.5 8-2 0-3.5-.8-4.5-1.7"/>
-        <path d="M6.5 12 2 8.5c0 2.5.8 5 2.5 7L2 19c2.5 0 4.5-1.2 6-3"/>
-        <circle cx="15.5" cy="10.5" r=".8" fill="#EAB308" stroke="none"/>
-      </svg>
-      КЛЁВОЕ<span>МЕСТО</span>
-      <span class="pro-badge">PRO</span>
-    </a>
-    <nav class="tabs" aria-label="Разделы">
-      <button class="tab active" data-view="map">Карта</button>
-      <button class="tab" data-view="calendar">Календарь клёва</button>
-    </nav>
-    <form class="search" id="search-form" role="search">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input id="search-input" type="search" placeholder="Точка или рыба: «судак», «Кубань», «Ейск»…" aria-label="Поиск по точкам и рыбе">
-    </form>
-    <div class="sub-chip" id="sub-chip">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></svg>
-      <span id="sub-text">Подписка активна</span>
-      <button id="sub-reset" title="Сбросить подписку (демо)">сброс</button>
-    </div>
-  </header>
+<div class="glow glow-1" aria-hidden="true"></div>
+<div class="glow glow-2" aria-hidden="true"></div>
 
-  <!-- MAP VIEW -->
-  <main class="view active" id="view-map">
-    <aside class="side">
-      <div class="filters" role="group" aria-label="Фильтры точек">
-        <button class="chip active" data-type="all">Все</button>
-        <button class="chip" data-type="sea"><span class="dot" style="background:var(--sea)"></span>Море</button>
-        <button class="chip" data-type="river"><span class="dot" style="background:var(--river)"></span>Реки</button>
-        <button class="chip" data-type="liman"><span class="dot" style="background:var(--liman)"></span>Лиманы</button>
-        <button class="chip" data-type="resv"><span class="dot" style="background:var(--resv)"></span>Вдхр</button>
-        <button class="chip" data-type="pond"><span class="dot" style="background:var(--pond)"></span>Платники</button>
-        <button class="chip" data-type="fav">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-1px" aria-hidden="true"><path d="M12 2.5 14.9 8.6l6.6.9-4.8 4.6 1.2 6.6L12 17.5l-5.9 3.2 1.2-6.6L2.5 9.5l6.6-.9z"/></svg>
-          Избранное
-        </button>
-        <select class="fish-select" id="fish-filter" aria-label="Фильтр по рыбе">
-          <option value="all">Любая рыба</option>
-        </select>
+<!-- NAV -->
+<nav class="nav" aria-label="Главная навигация">
+  <a class="logo" href="#">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EAB308" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M6.5 12c1.8-3.5 5-5.5 9-5.5 2 0 3.8.6 5 1.5-1.2 4.5-4.5 8-9.5 8-2 0-3.5-.8-4.5-1.7"/>
+      <path d="M6.5 12 2 8.5c0 2.5.8 5 2.5 7L2 19c2.5 0 4.5-1.2 6-3"/>
+      <circle cx="15.5" cy="10.5" r=".8" fill="#EAB308" stroke="none"/>
+    </svg>
+    КЛЁВОЕ<span>МЕСТО</span><span class="pro-badge">PRO</span>
+  </a>
+  <div class="nav-links">
+    <a href="#features">Что внутри</a>
+    <a href="#how">Как купить</a>
+    <a href="#pricing">Цена</a>
+    <a href="#faq">Вопросы</a>
+  </div>
+  <div class="nav-cta">
+    <a class="btn btn-ghost btn-sm" href="app.html">Войти</a>
+    <a class="btn btn-gold btn-sm" data-bot href="#">Купить в Telegram</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>
+      Весь Краснодарский край · от Сочи до Ейска
+    </div>
+    <h1>Хватит гадать, <em>где клюёт</em>.<br>Открой карту — и поезжай</h1>
+    <p>29 проверенных точек: Чёрное и Азовское море, Кубань, лиманы и водохранилища. Хищник, мирная и морская рыба, прогноз клёва на неделю — всё в одном приложении.</p>
+    <div class="hero-cta">
+      <a class="btn btn-gold" data-bot href="#">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.9 4.4 18.6 19.8c-.25 1.1-.9 1.37-1.82.85l-5.03-3.7-2.43 2.33c-.27.27-.49.49-1.01.49l.36-5.12L17.99 6.2c.4-.36-.09-.56-.63-.2L5.85 13.25l-4.96-1.55c-1.08-.34-1.1-1.08.22-1.6L20.5 3.06c.9-.33 1.68.2 1.4 1.34z"/></svg>
+        Купить подписку в Telegram
+      </a>
+      <a class="btn btn-ghost" href="app.html">У меня есть доступ — войти</a>
+    </div>
+    <p class="hero-note">449 ₽/мес · оплата в боте за 2 минуты · логин и пароль придут сразу после оплаты</p>
+    <div class="hero-stats">
+      <div class="stat"><b>29</b><span>проверенных точек</span></div>
+      <div class="stat"><b>18</b><span>видов рыбы</span></div>
+      <div class="stat"><b>5</b><span>типов водоёмов</span></div>
+      <div class="stat"><b>7 дней</b><span>прогноз клёва</span></div>
+    </div>
+
+    <!-- app mock -->
+    <div class="mock" aria-hidden="true">
+      <div class="mock-bar"><i></i><i></i><i></i><span>klevoe-mesto.pro / приложение</span></div>
+      <div class="mock-body">
+        <div class="mock-side">
+          <div class="mock-chiprow">
+            <span class="mock-chip on">Все</span><span class="mock-chip">Море</span><span class="mock-chip">Реки</span><span class="mock-chip">Лиманы</span><span class="mock-chip">Вдхр</span>
+          </div>
+          <div class="mock-card"><b>Краснодарское вдхр, дамба</b><span>Вдхр · ★ 4.8 · <span class="hot">жор</span></span></div>
+          <div class="mock-card"><b>Ахтанизовский лиман</b><span>Лиман · ★ 4.7 · хороший клёв</span></div>
+          <div class="mock-card"><b>Кубань, Затон</b><span>Река · ★ 4.5 · <span class="hot">жор</span></span></div>
+          <div class="mock-card"><b>Бугазская коса</b><span>Море · ★ 4.7 · хороший клёв</span></div>
+        </div>
+        <div class="mock-map">
+          <div class="mock-pin" style="background:#0C4A6E;left:18%;top:62%"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 12c1.8-3.5 5-5.5 9-5.5 2 0 3.8.6 5 1.5-1.2 4.5-4.5 8-9.5 8-2 0-3.5-.8-4.5-1.7"/><path d="M6.5 12 2 8.5c0 2.5.8 5 2.5 7L2 19c2.5 0 4.5-1.2 6-3"/></svg></div>
+          <div class="mock-pin" style="background:#14532D;left:38%;top:38%"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 12c1.8-3.5 5-5.5 9-5.5 2 0 3.8.6 5 1.5-1.2 4.5-4.5 8-9.5 8-2 0-3.5-.8-4.5-1.7"/><path d="M6.5 12 2 8.5c0 2.5.8 5 2.5 7L2 19c2.5 0 4.5-1.2 6-3"/></svg></div>
+          <div class="mock-pin" style="background:#134E4A;left:27%;top:22%"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 12c1.8-3.5 5-5.5 9-5.5 2 0 3.8.6 5 1.5-1.2 4.5-4.5 8-9.5 8-2 0-3.5-.8-4.5-1.7"/><path d="M6.5 12 2 8.5c0 2.5.8 5 2.5 7L2 19c2.5 0 4.5-1.2 6-3"/></svg></div>
+          <div class="mock-pin" style="background:#4C1D95;left:55%;top:55%;border-color:#EAB308;box-shadow:0 0 0 4px rgba(234,179,8,.35)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 12c1.8-3.5 5-5.5 9-5.5 2 0 3.8.6 5 1.5-1.2 4.5-4.5 8-9.5 8-2 0-3.5-.8-4.5-1.7"/><path d="M6.5 12 2 8.5c0 2.5.8 5 2.5 7L2 19c2.5 0 4.5-1.2 6-3"/></svg></div>
+          <div class="mock-panel">
+            <b>Прогноз клёва на 7 дней</b>
+            <div class="mock-fc"><i style="height:70%"></i><i style="height:85%"></i><i style="height:95%"></i><i style="height:88%"></i><i style="height:92%"></i><i style="height:80%"></i><i style="height:75%"></i></div>
+          </div>
+        </div>
       </div>
-      <p class="list-meta" id="list-meta"></p>
-      <div class="spot-list" id="spot-list" aria-label="Список точек"></div>
-    </aside>
-    <section class="map-area">
-      <div id="map" aria-label="Карта точек рыбалки Краснодарского края"></div>
-      <aside class="detail" id="detail" aria-live="polite"></aside>
-    </section>
-  </main>
+    </div>
+  </div>
+</header>
 
-  <!-- CALENDAR VIEW -->
-  <main class="view" id="view-calendar">
-    <h2>Календарь клёва — Краснодарский край</h2>
-    <p class="sub">18 видов рыбы по месяцам: море, Кубань, лиманы и водохранилища. Текущий месяц подсвечен.</p>
-    <div class="cal-scroll">
-      <table class="cal" id="cal-table"></table>
+<!-- FEATURES -->
+<section class="sec" id="features">
+  <div class="wrap">
+    <p class="sec-tag">Что внутри</p>
+    <h2 class="sec-title">Всё, что нужно для уловистого выезда</h2>
+    <p class="sec-sub">Каждая точка проверена местными рыбаками: координаты, сезон, снасти. Никакой воды — только то, что приносит рыбу.</p>
+    <div class="feats">
+      <div class="feat">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13L9 17l6 2.5 6-2.5v-13L15 6.5 9 4z"/><path d="M9 4v13M15 6.5v13"/></svg>
+        <b>Карта всего края</b>
+        <p>29 точек от Сочи до Ейской косы: море, Кубань, Лаба, лиманы Тамани, водохранилища и платники — с фильтрами по типу водоёма.</p>
+      </div>
+      <div class="feat">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 12c1.8-3.5 5-5.5 9-5.5 2 0 3.8.6 5 1.5-1.2 4.5-4.5 8-9.5 8-2 0-3.5-.8-4.5-1.7"/><path d="M6.5 12 2 8.5c0 2.5.8 5 2.5 7L2 19c2.5 0 4.5-1.2 6-3"/></svg>
+        <b>18 видов рыбы</b>
+        <p>Хищник — щука, судак, сом, жерех, окунь. Мирная — сазан, тарань, карась. Морская — от ставриды до пеленгаса. У каждого свой сезон.</p>
+      </div>
+      <div class="feat">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l4-6 4 3 4-8 6 11"/><path d="M3 21h18"/></svg>
+        <b>Прогноз клёва на 7 дней</b>
+        <p>Алгоритм по каждой точке: сезонность вида + фаза луны. Планируйте выезд на день, когда рыба действительно кормится.</p>
+      </div>
+      <div class="feat">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 11h18"/></svg>
+        <b>Календарь клёва на год</b>
+        <p>Когда идёт тарань, а когда жор судака — таблица по всем 18 видам и 12 месяцам. Текущий месяц всегда подсвечен.</p>
+      </div>
+      <div class="feat">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+        <b>GPS и маршрут в один клик</b>
+        <p>Точные координаты каждой точки и кнопка «Построить маршрут» — навигатор сам доведёт до места.</p>
+      </div>
+      <div class="feat">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 7c2-2.5 5-4 8-2.5S17.5 9 16 12c2 .5 3.5 2 3 4.5-.4 2-2.5 3-4.5 2.5"/><path d="M5 7c-1.5 3 0 6 3 7l-2 6 5-3.5"/></svg>
+        <b>Снасти и наживка</b>
+        <p>Под каждую точку — чем ловить: самодур или джиг, кузнечик или бойлы. Не придётся выяснять методом проб.</p>
+      </div>
     </div>
-    <div class="legend">
-      <span><i class="cell" aria-hidden="true"></i> нет клёва</span>
-      <span><i class="cell l1" aria-hidden="true"></i> слабый</span>
-      <span><i class="cell l2" aria-hidden="true"></i> хороший</span>
-      <span><i class="cell l3" aria-hidden="true"></i> жор</span>
-    </div>
-    <p class="rules-note">Соблюдайте правила любительского рыболовства Азово-Черноморского бассейна: нерестовые запреты (в крае обычно с 1 марта по 31 мая на отдельных водоёмах), суточные нормы вылова и минимальные размеры. Тарань, судак и некоторые виды имеют особые ограничения — сверяйтесь с актуальными правилами Росрыболовства.</p>
-  </main>
-</div>
+  </div>
+</section>
 
-<!-- ================= PAYWALL ================= -->
-<div class="paywall" id="paywall" role="dialog" aria-modal="true" aria-labelledby="pw-title">
-  <div class="pw-card">
-    <div class="pw-logo">
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#EAB308" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M6.5 12c1.8-3.5 5-5.5 9-5.5 2 0 3.8.6 5 1.5-1.2 4.5-4.5 8-9.5 8-2 0-3.5-.8-4.5-1.7"/>
-        <path d="M6.5 12 2 8.5c0 2.5.8 5 2.5 7L2 19c2.5 0 4.5-1.2 6-3"/>
-      </svg>
-      КЛЁВОЕ<span>МЕСТО</span>
+<!-- HOW -->
+<section class="sec" id="how" style="padding-top:20px">
+  <div class="wrap">
+    <p class="sec-tag">Как купить</p>
+    <h2 class="sec-title">Доступ за 2 минуты — через Telegram</h2>
+    <p class="sec-sub">Никаких регистраций с почтой и SMS. Всё происходит в боте: оплатил — получил логин и пароль — зашёл.</p>
+    <div class="steps">
+      <div class="step">
+        <b>Откройте бота</b>
+        <p>Нажмите «Купить в Telegram» — откроется наш бот <span class="tg" data-bot-name>@klevoe_mesto_pro_bot</span>. Жмите «Старт».</p>
+      </div>
+      <div class="step">
+        <b>Оплатите подписку</b>
+        <p>449 ₽ за месяц или 3 990 ₽ за год — картой или СБП прямо в боте. Чек придёт в этот же чат.</p>
+      </div>
+      <div class="step">
+        <b>Получите логин и пароль</b>
+        <p>Бот сгенерирует доступ или предложит задать свой. Вводите его на <a href="app.html" style="color:var(--gold);font-weight:700">странице входа</a> — и карта ваша.</p>
+      </div>
     </div>
-    <h1 id="pw-title">Карта клёва всего <em>Краснодарского края</em></h1>
-    <p class="pw-sub">Доступ только по подписке. Море, Кубань, лиманы и водохранилища: где, когда и на что клюёт — без пустых выездов.</p>
-    <div class="pw-stats">
-      <div><b>29</b><span>проверенных точек</span></div>
-      <div><b>18</b><span>видов рыбы</span></div>
-      <div><b>5</b><span>типов водоёмов</span></div>
-      <div><b>7 дней</b><span>прогноз клёва</span></div>
-    </div>
-    <div class="pw-grid">
-      <ul class="pw-feats">
-        <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg>Интерактивная карта: от Сочи до Ейска — Чёрное и Азовское море, Кубань, Лаба, лиманы, водохранилища</li>
-        <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg>Хищник (щука, судак, сом, жерех, окунь), мирная и морская рыба — 18 видов с сезонами</li>
-        <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg>Прогноз клёва на 7 дней: сезонность + фаза луны по каждой точке</li>
-        <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg>Точные GPS-координаты, снасти и наживка под каждую точку, маршрут в один клик</li>
-        <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg>Годовой календарь клёва и избранные точки</li>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="sec" id="pricing" style="padding-top:20px">
+  <div class="wrap">
+    <p class="sec-tag" style="text-align:center">Цена</p>
+    <h2 class="sec-title" style="text-align:center">Одна подписка — весь край</h2>
+    <p class="sec-sub" style="text-align:center;margin-left:auto;margin-right:auto">Дешевле одной пачки силикона. Окупается первым выездом, который не оказался пустым.</p>
+    <div class="price-card">
+      <span class="flag">ЕЖЕМЕСЯЧНАЯ ПОДПИСКА</span>
+      <div class="price-big">449 ₽<small> / месяц</small></div>
+      <p class="alt">или 3 990 ₽/год — экономия 26%</p>
+      <ul>
+        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg>Все 29 точек с GPS-координатами</li>
+        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg>Прогноз клёва на 7 дней по каждой точке</li>
+        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg>Календарь клёва по 18 видам рыбы</li>
+        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg>Снасти и наживка под каждую точку</li>
+        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg>Новые точки каждый месяц — без доплат</li>
       </ul>
-      <div class="plans">
-        <button class="plan featured" data-plan="month">
-          <div class="plan-info"><b>Месяц</b><small>Продление автоматически, отмена в любой момент</small></div>
-          <span class="flag">ПОПУЛЯРНО</span>
-          <span class="plan-price">449 ₽<small>/мес</small></span>
-        </button>
-        <button class="plan" data-plan="year">
-          <div class="plan-info"><b>Год</b><small>332 ₽/мес — экономия 26%</small></div>
-          <span class="plan-price">3 990 ₽<small>/год</small></span>
-        </button>
-      </div>
+      <a class="btn btn-gold" data-bot href="#">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.9 4.4 18.6 19.8c-.25 1.1-.9 1.37-1.82.85l-5.03-3.7-2.43 2.33c-.27.27-.49.49-1.01.49l.36-5.12L17.99 6.2c.4-.36-.09-.56-.63-.2L5.85 13.25l-4.96-1.55c-1.08-.34-1.1-1.08.22-1.6L20.5 3.06c.9-.33 1.68.2 1.4 1.34z"/></svg>
+        Оформить в Telegram
+      </a>
+      <p class="price-note">Отмена в один клик в боте. Никаких скрытых списаний.</p>
     </div>
-    <p class="pw-note">Оплата картой РФ или СБП. Подписка продлевается автоматически, отключается в один клик.</p>
   </div>
-</div>
+</section>
 
-<!-- ================= PAYMENT MODAL ================= -->
-<div class="modal-bg" id="pay-modal" role="dialog" aria-modal="true" aria-labelledby="pay-title">
-  <div class="modal">
-    <button class="detail-close" data-pay-close aria-label="Закрыть окно" style="position:absolute;top:12px;right:12px">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
-    </button>
-    <div id="pay-step-confirm">
-      <h3 id="pay-title">Оформление подписки</h3>
-      <div class="price-big" id="pay-price">449 ₽</div>
-      <p id="pay-desc">Тариф «Месяц». Демо-режим: оплата имитируется — здесь подключается ЮKassa или CloudPayments.</p>
-      <button class="btn btn-gold" id="pay-btn">Оплатить</button>
-    </div>
-    <div id="pay-step-process" style="display:none">
-      <h3>Проводим оплату…</h3>
-      <div class="spinner" style="display:block"></div>
-      <p>Не закрывайте окно</p>
-    </div>
-    <div id="pay-step-ok" class="pay-ok" style="display:none">
-      <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m8 12.5 2.7 2.7L16 9.5"/></svg>
-      <h3>Подписка активна!</h3>
-      <p id="pay-ok-text">Доступ открыт. Ни хвоста, ни чешуи!</p>
-      <button class="btn btn-gold" id="pay-done">Открыть карту</button>
+<!-- FAQ -->
+<section class="sec" id="faq" style="padding-top:20px">
+  <div class="wrap">
+    <p class="sec-tag" style="text-align:center">Вопросы</p>
+    <h2 class="sec-title" style="text-align:center;margin-bottom:36px">Частые вопросы</h2>
+    <div class="faq">
+      <details>
+        <summary>Почему оплата через Telegram, а не на сайте?</summary>
+        <p>Так быстрее и безопаснее: не нужно вводить карту на сайте и придумывать регистрацию. Бот принимает оплату, моментально выдаёт доступ и остаётся каналом поддержки — продление, вопросы, новые точки.</p>
+      </details>
+      <details>
+        <summary>Что я получу после оплаты?</summary>
+        <p>Бот пришлёт логин и пароль (или предложит задать свои). С ними вы входите в приложение с любого устройства — телефона, планшета, компьютера.</p>
+      </details>
+      <details>
+        <summary>Точки реально рабочие?</summary>
+        <p>База собрана по отчётам местных рыбаков и проверенным публичным точкам: от Бугазской косы до Ейска. У каждой — сезонность, снасти и описание подхода. База пополняется ежемесячно.</p>
+      </details>
+      <details>
+        <summary>Как работает прогноз клёва?</summary>
+        <p>Алгоритм учитывает сезонную активность каждого вида рыбы на точке и фазу луны. Это ориентир, который помогает выбрать лучший день недели для выезда.</p>
+      </details>
+      <details>
+        <summary>Можно ли вернуть деньги?</summary>
+        <p>Если в течение 7 дней после первой оплаты приложение вам не подошло — напишите в бота, вернём платёж без вопросов.</p>
+      </details>
     </div>
   </div>
-</div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="sec" style="padding-top:0">
+  <div class="wrap">
+    <div class="final">
+      <h2>Следующие выходные — с уловом</h2>
+      <p>Подписка активируется за 2 минуты. Прямо сейчас на Краснодарском водохранилище — жор судака.</p>
+      <a class="btn btn-gold" data-bot href="#">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.9 4.4 18.6 19.8c-.25 1.1-.9 1.37-1.82.85l-5.03-3.7-2.43 2.33c-.27.27-.49.49-1.01.49l.36-5.12L17.99 6.2c.4-.36-.09-.56-.63-.2L5.85 13.25l-4.96-1.55c-1.08-.34-1.1-1.08.22-1.6L20.5 3.06c.9-.33 1.68.2 1.4 1.34z"/></svg>
+        Купить подписку — 449 ₽/мес
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot">
+    <div>
+      <a class="logo" href="#">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EAB308" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6.5 12c1.8-3.5 5-5.5 9-5.5 2 0 3.8.6 5 1.5-1.2 4.5-4.5 8-9.5 8-2 0-3.5-.8-4.5-1.7"/>
+          <path d="M6.5 12 2 8.5c0 2.5.8 5 2.5 7L2 19c2.5 0 4.5-1.2 6-3"/>
+        </svg>
+        КЛЁВОЕ<span>МЕСТО</span><span class="pro-badge">PRO</span>
+      </a>
+      <p style="margin-top:10px">© 2026 Клёвое Место PRO · Краснодарский край</p>
+    </div>
+    <p class="foot-note">Соблюдайте правила любительского рыболовства: нерестовые запреты, суточные нормы вылова и минимальные размеры рыбы. Актуальные ограничения — на сайте Росрыболовства.</p>
+  </div>
+</footer>
 
 <script>
-/* ================= ДАННЫЕ ================= */
-const MONTHS = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
-const DAYS = ['вс','пн','вт','ср','чт','пт','сб'];
-const BITE_LABELS = ['нет клёва','слабый клёв','хороший клёв','жор'];
-
-const FISH = {
-  /* море */
-  stavrida: {name:'Ставрида',   cat:'m', cal:[2,2,2,2,3,3,3,3,3,2,2,2]},
-  kefal:    {name:'Кефаль',     cat:'m', cal:[0,0,1,1,2,2,2,3,3,3,2,1]},
-  pelengas: {name:'Пеленгас',   cat:'m', cal:[0,0,1,2,3,3,2,2,3,3,1,0]},
-  barabulka:{name:'Барабулька', cat:'m', cal:[0,0,0,1,3,3,2,2,3,1,0,0]},
-  sargan:   {name:'Сарган',     cat:'m', cal:[2,2,3,3,2,0,0,0,1,2,3,3]},
-  lufar:    {name:'Луфарь',     cat:'m', cal:[0,0,0,0,0,1,2,3,3,3,1,0]},
-  gorbyl:   {name:'Горбыль',    cat:'m', cal:[0,0,0,1,2,3,3,3,2,1,0,0]},
-  /* хищники */
-  schuka:   {name:'Щука',       cat:'p', cal:[2,2,3,1,2,2,1,2,3,3,3,2]},
-  sudak:    {name:'Судак',      cat:'p', cal:[2,2,3,2,2,2,2,2,3,3,3,2]},
-  okun:     {name:'Окунь',      cat:'p', cal:[2,2,2,2,3,2,2,2,3,3,2,2]},
-  som:      {name:'Сом',        cat:'p', cal:[0,0,1,2,3,3,3,3,2,1,0,0]},
-  zhereh:   {name:'Жерех',      cat:'p', cal:[0,0,1,2,3,3,2,2,3,2,1,0]},
-  /* мирная и речная */
-  sazan:    {name:'Сазан',      cat:'w', cal:[0,0,1,2,3,3,3,3,3,2,1,0]},
-  taran:    {name:'Тарань',     cat:'w', cal:[1,2,3,3,2,1,1,1,2,3,3,2]},
-  karas:    {name:'Карась',     cat:'w', cal:[0,0,1,2,3,3,2,2,2,1,0,0]},
-  golavl:   {name:'Голавль',    cat:'w', cal:[0,0,1,2,3,3,2,2,3,2,1,0]},
-  usach:    {name:'Усач',       cat:'w', cal:[0,0,0,1,2,3,3,2,2,1,0,0]},
-  forel:    {name:'Форель',     cat:'w', cal:[2,2,3,3,2,2,2,2,2,3,3,2]}
-};
-const FISH_CATS = {m:'Морская рыба', p:'Хищники', w:'Мирная и речная'};
-
-const TYPE_META = {
-  sea:  {label:'Море',    tag:'tag-sea',  pin:'pin-sea'},
-  river:{label:'Река',    tag:'tag-river',pin:'pin-river'},
-  liman:{label:'Лиман',   tag:'tag-liman',pin:'pin-liman'},
-  resv: {label:'Вдхр',    tag:'tag-resv', pin:'pin-resv'},
-  pond: {label:'Платник', tag:'tag-pond', pin:'pin-pond'}
-};
-
-const SPOTS = [
-  /* Чёрное море */
-  {id:'sochi-morport', name:'Морпорт Сочи, южный мол', type:'sea', lat:43.5781, lng:39.7159, rating:4.8,
-   fish:['stavrida','kefal','barabulka'],
-   desc:'Классика юга: с мола самодуром на глубине 8–12 м, кефаль подходит к стенке на хлеб и нереис.',
-   gear:'Самодур, бомбарда, поплавочная удочка 6 м'},
-  {id:'adler-mol', name:'Южный мол Адлера', type:'sea', lat:43.4316, lng:39.9165, rating:4.7,
-   fish:['stavrida','lufar','kefal'],
-   desc:'Осенью к стенке подходят котлы луфаря — рыба рвёт пилькеры у самого мола. Крупная ставрида весь сезон.',
-   gear:'Спиннинг M, пилькеры 10–20 г'},
-  {id:'tuapse', name:'Туапсе, северный мол', type:'sea', lat:44.0894, lng:39.0664, rating:4.4,
-   fish:['stavrida','kefal','sargan'],
-   desc:'Глубина у мола до 10 м. Весной отлично по саргану, летом стабильная ставрида на рассвете.',
-   gear:'Самодур, бомбарда с перьями'},
-  {id:'arhipo', name:'Архипо-Осиповка, устье Вулана', type:'sea', lat:44.3672, lng:38.5331, rating:4.3,
-   fish:['kefal','gorbyl','barabulka'],
-   desc:'Пресная струя Вулана держит кефаль. Ночью летом с пирса берёт горбыль на резку.',
-   gear:'Донка на ночь, поплавок'},
-  {id:'gelendzhik', name:'Геленджик, Толстый мыс', type:'sea', lat:44.5536, lng:38.0764, rating:4.6,
-   fish:['stavrida','barabulka','sargan'],
-   desc:'Скалистый свал с глубиной — ставрида и барабулька у самого берега. Людно летом, идеально в межсезонье.',
-   gear:'Самодур, лёгкая донка с креветкой'},
-  {id:'novoros', name:'Новороссийск, Суджукская коса', type:'sea', lat:44.6789, lng:37.7919, rating:4.5,
-   fish:['stavrida','sargan','kefal'],
-   desc:'Коса с двумя сторонами: штиль всегда с одной из них. Весна и осень — лучшие месяцы по саргану.',
-   gear:'Бомбарда, силикон на отводном'},
-  {id:'bugaz', name:'Бугазская коса', type:'sea', lat:45.0117, lng:37.1357, rating:4.7,
-   fish:['pelengas','kefal','stavrida'],
-   desc:'Песчаная коса между морем и лиманом — трофейный пеленгас на дальнем забросе. Места дикие, народа мало.',
-   gear:'Сёрфовая донка, груз 80–100 г, морской червь'},
-  /* Азовское море */
-  {id:'eysk', name:'Ейская коса', type:'sea', lat:46.7337, lng:38.2654, rating:4.6,
-   fish:['taran','sudak','pelengas'],
-   desc:'Визитка Азова: весной ход тарани, осенью судак подходит к косе. Мелководье — рыба греется и кормится.',
-   gear:'Фидер, боковой кивок, твистеры на судака'},
-  {id:'dolzhanka', name:'Должанская коса', type:'sea', lat:46.6420, lng:37.7973, rating:4.5,
-   fish:['taran','pelengas','sudak'],
-   desc:'Длинная коса с ракушечными банками. Пеленгас летом ходит вдоль свала в 50–70 м от берега.',
-   gear:'Дальний заброс, фидер, морской червь'},
-  {id:'golubitskaya', name:'Голубицкая, Темрюкский залив', type:'sea', lat:45.3271, lng:37.2741, rating:4.4,
-   fish:['sudak','taran','pelengas'],
-   desc:'Залив у устья Кубани — кормовая база для судака. Лучше с лодки, но и с берега достают.',
-   gear:'Джиг 10–16 г, фидер'},
-  {id:'primorsko', name:'Приморско-Ахтарск, набережная', type:'sea', lat:46.0481, lng:38.1655, rating:4.3,
-   fish:['taran','sudak','karas'],
-   desc:'Город рыбаков: ловят прямо с набережной и дамб. Весной тарань идёт стеной.',
-   gear:'Фидер, поплавок, опарыш и червь'},
-  /* Лиманы */
-  {id:'ahtaniz', name:'Ахтанизовский лиман', type:'liman', lat:45.3221, lng:37.1031, rating:4.7,
-   fish:['schuka','sazan','okun'],
-   desc:'Камышовые плёсы и чистые окна — классическая лиманная щука. Сазан на зорях у тростника.',
-   gear:'Спиннинг, незацепляйки, кукуруза на сазана'},
-  {id:'kurchan', name:'Курчанский лиман', type:'liman', lat:45.2740, lng:37.4877, rating:4.5,
-   fish:['sudak','sazan','taran'],
-   desc:'Связан с Кубанью — судак заходит кормиться. Глубины до 2,5 м, работают неглубокие воблеры.',
-   gear:'Воблеры 60–80 мм, фидер на сазана'},
-  {id:'kirpil', name:'Кирпильские лиманы', type:'liman', lat:45.9311, lng:38.2167, rating:4.6,
-   fish:['schuka','sazan','karas'],
-   desc:'Система лиманов с лабиринтом проток — щуки много, прессинг низкий. Нужна лодка или болотоход.',
-   gear:'Колебалки, поппер по окнам травы'},
-  /* Кубань и реки */
-  {id:'kuban-zaton', name:'Кубань, Затон (Краснодар)', type:'river', lat:45.0136, lng:38.9608, rating:4.5,
-   fish:['som','sudak','zhereh'],
-   desc:'Городская классика: ямы под яром держат сома, на перекатах бьёт жерех. Вечером судак на джиг.',
-   gear:'Джиг 14–20 г, квок с лодки'},
-  {id:'ust-laba', name:'Кубань, Усть-Лабинск', type:'river', lat:45.2271, lng:39.6842, rating:4.4,
-   fish:['som','sazan','golavl'],
-   desc:'Слияние Кубани и Лабы — закоряженные ямы с сомом, сазан на бровках. Течение сильное, груза тяжёлые.',
-   gear:'Фидер 120 г+, квок, выползок'},
-  {id:'protoka', name:'Протока, Славянск-на-Кубани', type:'river', lat:45.2602, lng:38.1248, rating:4.6,
-   fish:['sudak','zhereh','som'],
-   desc:'Рукав Кубани с чистой струёй: жерех на сбирулино, судак по бровкам. Осенью — лучшее время.',
-   gear:'Кастмастер, джиг по свалам'},
-  {id:'laba', name:'Лаба, Лабинск', type:'river', lat:44.6402, lng:40.7382, rating:4.2,
-   fish:['golavl','usach','zhereh'],
-   desc:'Быстрая предгорная река: голавль на перекатах, усач в ямках за струёй. Ходовая рыбалка.',
-   gear:'Ультралайт, кренки 3–5 см, кузнечик'},
-  {id:'belaya', name:'Белая, Белореченск', type:'river', lat:44.7726, lng:39.8794, rating:4.1,
-   fish:['golavl','usach'],
-   desc:'Прозрачная вода и осторожная рыба — подход решает всё. Летом голавль бьёт с поверхности.',
-   gear:'Ультралайт, нахлыст'},
-  {id:'psekups', name:'Псекупс, Горячий Ключ', type:'river', lat:44.6334, lng:39.1283, rating:4.0,
-   fish:['golavl','okun'],
-   desc:'Полчаса от Краснодара: перекаты с голавлём, в омутах окунь. Идеально для лайтовой рыбалки на полдня.',
-   gear:'Лайт, вертушки №1–2'},
-  {id:'eya', name:'Река Ея, Кущёвская', type:'river', lat:46.5588, lng:39.6253, rating:4.0,
-   fish:['schuka','karas','okun'],
-   desc:'Степная река с плотинами: в подпорах щука и карась. Рабочая точка севера края без толпы.',
-   gear:'Спиннинг, колебалки, поплавок'},
-  /* Водохранилища */
-  {id:'krasnodar-vdhr', name:'Краснодарское вдхр, дамба', type:'resv', lat:45.0125, lng:39.1530, rating:4.8,
-   fish:['sudak','schuka','som','okun'],
-   desc:'Главный трофейный водоём края: судак по бровкам затопленного русла, осенью котловой окунь.',
-   gear:'Джиг 12–18 г, отводной поводок'},
-  {id:'shapsug', name:'Шапсугское вдхр', type:'resv', lat:44.9352, lng:38.9099, rating:4.4,
-   fish:['schuka','okun','karas'],
-   desc:'Мелководное и тёплое — щука среди травы весь сезон. Весной отличный карась на поплавок.',
-   gear:'Незацепляйки, поппер, поплавок'},
-  {id:'kryukov', name:'Крюковское вдхр', type:'resv', lat:44.9456, lng:38.6442, rating:4.2,
-   fish:['schuka','karas','okun'],
-   desc:'Тихий водоём без прессинга: травянка по кромке камыша, бель на зорях.',
-   gear:'Вертушки, лёгкий джиг'},
-  {id:'varnavin', name:'Варнавинское вдхр', type:'resv', lat:44.9226, lng:37.6485, rating:4.3,
-   fish:['schuka','sazan','okun'],
-   desc:'Просторные плёсы под Крымском: весной щука у впадающих каналов, летом сазан на бойлы.',
-   gear:'Колебалки, карповая снасть'},
-  /* Платники и горные */
-  {id:'trout-adler', name:'Форелевое хозяйство «Адлер»', type:'pond', lat:43.5263, lng:39.9761, rating:4.9,
-   fish:['forel'],
-   desc:'Крупнейший форелевый комплекс России: клёв гарантирован, улов выкупается по весу. Без лицензии.',
-   gear:'Поплавок, форелевая паста, кукуруза'},
-  {id:'kazachiy', name:'Платник «Казачий стан», Краснодар', type:'pond', lat:45.1268, lng:39.0526, rating:4.5,
-   fish:['sazan','som','karas'],
-   desc:'Зарыбленные пруды в 20 минутах от города: карп до 10 кг, сом на квок с мостков. Беседки, мангалы.',
-   gear:'Карповая снасть, бойлы, поплавок'},
-  {id:'mzymta', name:'Мзымта, Казачий Брод', type:'river', lat:43.5117, lng:39.9663, rating:4.5,
-   fish:['golavl','usach'],
-   desc:'Горная Мзымта у Скайпарка: перекаты, ямы, дикий усач. Ходовая рыбалка в красивейшем каньоне.',
-   gear:'Ультралайт, микроколебалки'},
-  {id:'shahe', name:'Устье Шахе, Головинка', type:'river', lat:43.7843, lng:39.4421, rating:4.6,
-   fish:['golavl','usach','kefal'],
-   desc:'Перекаты в устье: голавль бьёт с поверхности, в солоноватой зоне ходит кефаль.',
-   gear:'Воблеры 3–5 см, кузнечик'}
-];
-
-/* ================= ПОДПИСКА ================= */
-/* Демо-биллинг на localStorage. Для продакшена: ЮKassa / CloudPayments + проверка на бэкенде. */
-const SUB_KEY = 'km_sub_until';
-const PLANS = {month:{price:'449 ₽', days:30, label:'Месяц'}, year:{price:'3 990 ₽', days:365, label:'Год'}};
-let pendingPlan = 'month';
-
-function subUntil(){ return +localStorage.getItem(SUB_KEY) || 0; }
-function subActive(){ return subUntil() > Date.now(); }
-
-function applySubState(){
-  const app = document.getElementById('app');
-  const pw = document.getElementById('paywall');
-  if(subActive()){
-    app.classList.remove('locked');
-    pw.hidden = true;
-    document.getElementById('sub-text').textContent =
-      'Подписка до ' + new Date(subUntil()).toLocaleDateString('ru-RU');
-  }else{
-    app.classList.add('locked');
-    pw.hidden = false;
-  }
-}
-
-document.querySelectorAll('.plan[data-plan]').forEach(b=>{
-  b.addEventListener('click',()=>{
-    pendingPlan = b.dataset.plan;
-    const p = PLANS[pendingPlan];
-    document.getElementById('pay-price').textContent = p.price;
-    document.getElementById('pay-desc').textContent =
-      `Тариф «${p.label}». Демо-режим: оплата имитируется — здесь подключается ЮKassa или CloudPayments.`;
-    showPayStep('confirm');
-    document.getElementById('pay-modal').classList.add('open');
+  /* Ссылка на телеграм-бота — поменяйте username после создания бота в BotFather */
+  const TG_BOT_URL = 'https://t.me/klevoe_mesto_pro_bot';
+  document.querySelectorAll('[data-bot]').forEach(a=>{
+    a.href = TG_BOT_URL;
+    a.target = '_blank';
+    a.rel = 'noopener';
   });
-});
-function showPayStep(step){
-  ['confirm','process','ok'].forEach(s=>{
-    document.getElementById('pay-step-'+s).style.display = s===step ? 'block' : 'none';
+  document.querySelectorAll('[data-bot-name]').forEach(el=>{
+    el.textContent = '@' + TG_BOT_URL.split('/').pop();
   });
-}
-document.getElementById('pay-btn').addEventListener('click',()=>{
-  showPayStep('process');
-  setTimeout(()=>{
-    const days = PLANS[pendingPlan].days;
-    localStorage.setItem(SUB_KEY, Date.now() + days*86400000);
-    document.getElementById('pay-ok-text').textContent =
-      `Доступ открыт до ${new Date(subUntil()).toLocaleDateString('ru-RU')}. Ни хвоста, ни чешуи!`;
-    showPayStep('ok');
-  }, 1400);
-});
-document.getElementById('pay-done').addEventListener('click',()=>{
-  document.getElementById('pay-modal').classList.remove('open');
-  applySubState();
-  setTimeout(()=>{ if(map) map.container.fitToViewport(); }, 350);
-});
-document.getElementById('pay-modal').addEventListener('click',e=>{
-  if(e.target===e.currentTarget || e.target.closest('[data-pay-close]'))
-    document.getElementById('pay-modal').classList.remove('open');
-});
-document.getElementById('sub-reset').addEventListener('click',()=>{
-  localStorage.removeItem(SUB_KEY);
-  applySubState();
-});
-
-/* ================= СОСТОЯНИЕ ================= */
-const NOW_MONTH = new Date().getMonth();
-let typeFilter = 'all';
-let fishFilter = 'all';
-let searchQuery = '';
-let activeSpotId = null;
-const markers = {};
-const FAV_KEY = 'km_favs';
-let favs = new Set(JSON.parse(localStorage.getItem(FAV_KEY)||'[]'));
-function saveFavs(){ localStorage.setItem(FAV_KEY, JSON.stringify([...favs])); }
-
-/* ================= ХЕЛПЕРЫ ================= */
-const $ = s => document.querySelector(s);
-const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-
-function spotBiteNow(spot){ return Math.max(...spot.fish.map(f=>FISH[f].cal[NOW_MONTH])); }
-function spotSeason(spot){ return MONTHS.map((_,m)=>Math.max(...spot.fish.map(f=>FISH[f].cal[m]))); }
-function biteHTML(level){
-  const flame = '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 22c4.4 0 7.5-3 7.5-7.2 0-3.1-1.7-5.4-3.3-7.1-.6 1.2-1.5 2.2-2.6 2.6.3-2.7-.9-6.2-3.9-8.3.2 2.4-.8 4-2.1 5.6C6 9.5 4.5 11.5 4.5 14.8 4.5 19 7.6 22 12 22z"/></svg>';
-  return `<span class="bite bite-${level}">${level>0?flame:''}${BITE_LABELS[level]}</span>`;
-}
-const starSVG = '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5 14.9 8.6l6.6.9-4.8 4.6 1.2 6.6L12 17.5l-5.9 3.2 1.2-6.6L2.5 9.5l6.6-.9z"/></svg>';
-const fishSVG = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 12c1.8-3.5 5-5.5 9-5.5 2 0 3.8.6 5 1.5-1.2 4.5-4.5 8-9.5 8-2 0-3.5-.8-4.5-1.7"/><path d="M6.5 12 2 8.5c0 2.5.8 5 2.5 7L2 19c2.5 0 4.5-1.2 6-3"/></svg>';
-
-/* ================= ПРОГНОЗ КЛЁВА (сезон + фаза луны) ================= */
-function hashStr(s){ let h=0; for(const c of s) h=(h*31+c.charCodeAt(0))|0; return Math.abs(h); }
-function moonPhase(date){
-  const synodic = 29.530588853;
-  const known = Date.UTC(2000,0,6,18,14); // новолуние 06.01.2000
-  let ph = ((date - known)/86400000 % synodic)/synodic;
-  return ph < 0 ? ph+1 : ph;
-}
-function forecast(spot){
-  const out = [];
-  for(let i=0;i<7;i++){
-    const d = new Date(); d.setDate(d.getDate()+i);
-    const season = Math.max(...spot.fish.map(f=>FISH[f].cal[d.getMonth()])); // 0..3
-    const ph = moonPhase(d.getTime());
-    const lunar = (Math.cos(ph*4*Math.PI)+1)/2;                              // пики в ново- и полнолуние
-    const noise = hashStr(spot.id + d.toDateString()) % 11;                  // 0..10
-    const score = Math.min(100, Math.round(season*25 + lunar*15 + noise));
-    out.push({date:d, score});
-  }
-  return out;
-}
-
-/* ================= ФИЛЬТРАЦИЯ ================= */
-function visibleSpots(){
-  return SPOTS.filter(s=>{
-    if(typeFilter==='fav'){ if(!favs.has(s.id)) return false; }
-    else if(typeFilter!=='all' && s.type!==typeFilter) return false;
-    if(fishFilter!=='all' && !s.fish.includes(fishFilter)) return false;
-    if(searchQuery){
-      const hay = (s.name+' '+s.desc+' '+s.fish.map(f=>FISH[f].name).join(' ')).toLowerCase();
-      if(!hay.includes(searchQuery)) return false;
-    }
-    return true;
-  });
-}
-
-/* ================= КАРТА (Яндекс.Карты JS API 2.1) ================= */
-/* Ключ выдаётся бесплатно: https://developer.tech.yandex.ru/ → «JavaScript API и HTTP Геокодер» */
-const YMAPS_API_KEY = '447f6122-4e9c-4101-951c-f7f74c9b36d4';
-let map = null;
-let PinLayout = null;
-
-function pinHTML(spot, active){
-  const meta = TYPE_META[spot.type];
-  return `<div class="pin ${meta.pin}${active?' pin-active':''}" data-spot-pin="${spot.id}" style="margin:-28px 0 0 -15px" role="button" aria-label="${esc(spot.name)}">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 12c1.8-3.5 5-5.5 9-5.5 2 0 3.8.6 5 1.5-1.2 4.5-4.5 8-9.5 8-2 0-3.5-.8-4.5-1.7"/><path d="M6.5 12 2 8.5c0 2.5.8 5 2.5 7L2 19c2.5 0 4.5-1.2 6-3"/></svg>
-  </div>`;
-}
-function makePlacemark(spot){
-  return new ymaps.Placemark([spot.lat,spot.lng],
-    {pinHtml: pinHTML(spot, spot.id===activeSpotId)},
-    {iconLayout: PinLayout,
-     iconShape: {type:'Rectangle', coordinates:[[-15,-28],[15,2]]},
-     hideIconOnBalloonOpen:false});
-}
-function setPinState(id, active){
-  const spot = SPOTS.find(s=>s.id===id);
-  if(spot && markers[id]) markers[id].properties.set('pinHtml', pinHTML(spot, active));
-}
-function refreshMarkers(){
-  if(!map) return;
-  const vis = visibleSpots().map(s=>s.id);
-  SPOTS.forEach(s=>{
-    if(vis.includes(s.id)){
-      if(!markers[s.id]){
-        markers[s.id] = makePlacemark(s);
-        map.geoObjects.add(markers[s.id]);
-      }
-    }else if(markers[s.id]){
-      map.geoObjects.remove(markers[s.id]); delete markers[s.id];
-    }
-  });
-}
-
-function initMap(){
-  if(!ymaps.Map || !ymaps.Placemark || !ymaps.templateLayoutFactory){ showMapFallback(); return; }
-  try{ buildMap(); }catch(e){ showMapFallback(); }
-}
-function buildMap(){
-  map = new ymaps.Map('map',{
-    center:[45.05,38.7], zoom:7,
-    controls:['zoomControl']
-  },{
-    suppressMapOpenBlock:true,
-    yandexMapDisablePoiInteractivity:true
-  });
-  PinLayout = ymaps.templateLayoutFactory.createClass('$[properties.pinHtml]');
-  refreshMarkers();
-  let checks = 0;
-  const watcher = setInterval(()=>{
-    checks++;
-    const hasPins = document.querySelector('#map .pin');
-    const note = document.getElementById('map-key-note');
-    if(hasPins){ if(note) note.remove(); clearInterval(watcher); }
-    else if(checks >= 4 && !note){
-      const n = document.createElement('div');
-      n.id = 'map-key-note';
-      n.style.cssText = 'position:absolute;left:14px;bottom:40px;z-index:950;max-width:320px;padding:12px 16px;border-radius:12px;background:rgba(15,12,10,.92);border:1px solid rgba(234,179,8,.45);font-size:13px;color:#FAFAF9;backdrop-filter:blur(10px)';
-      n.innerHTML = 'Точки не отрисовались: проверьте API-ключ Яндекс.Карт (<b style="color:#EAB308">YMAPS_API_KEY</b> в index.html).';
-      document.querySelector('.map-area').appendChild(n);
-    }
-    if(checks > 15) clearInterval(watcher);
-  }, 2000);
-}
-function showMapFallback(){
-  document.getElementById('map').innerHTML = `
-    <div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:30px">
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#EAB308" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13L9 17l6 2.5 6-2.5v-13L15 6.5 9 4z"/><path d="M9 4v13M15 6.5v13"/></svg>
-      <p style="font-weight:800;font-size:16px;max-width:380px">Карта не загрузилась</p>
-      <p style="color:var(--muted);font-size:14px;max-width:400px">Яндекс.Карты требуют API-ключ. Проверьте <b style="color:var(--gold)">YMAPS_API_KEY</b> в index.html. Список точек работает и без карты.</p>
-    </div>`;
-}
-document.addEventListener('click',e=>{
-  const pin = e.target.closest('[data-spot-pin]');
-  if(pin) selectSpot(pin.dataset.spotPin,{pan:false});
-});
-(function loadYmaps(){
-  const s = document.createElement('script');
-  s.src = 'https://api-maps.yandex.ru/2.1/?lang=ru_RU' + (YMAPS_API_KEY ? '&apikey=' + YMAPS_API_KEY : '');
-  s.onload = ()=>ymaps.ready().then(initMap, showMapFallback);
-  s.onerror = showMapFallback;
-  document.head.appendChild(s);
-  setTimeout(()=>{ if(!map) showMapFallback(); }, 10000);
-})();
-
-/* ================= СПИСОК ================= */
-function favBtnHTML(id){
-  return `<button class="fav-btn${favs.has(id)?' on':''}" data-fav="${id}" aria-label="${favs.has(id)?'Убрать из избранного':'В избранное'}" title="Избранное">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="${favs.has(id)?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5 14.9 8.6l6.6.9-4.8 4.6 1.2 6.6L12 17.5l-5.9 3.2 1.2-6.6L2.5 9.5l6.6-.9z"/></svg>
-  </button>`;
-}
-function renderList(){
-  const list = $('#spot-list');
-  const vis = visibleSpots();
-  $('#list-meta').textContent = vis.length
-    ? `Найдено точек: ${vis.length} из ${SPOTS.length}`
-    : 'Ничего не нашлось';
-  if(!vis.length){
-    list.innerHTML = '<p style="color:var(--muted);padding:16px;font-size:14px">Попробуйте другой фильтр или запрос.</p>';
-    return;
-  }
-  list.innerHTML = vis.map(s=>{
-    const meta = TYPE_META[s.type];
-    return `<div class="spot-card${s.id===activeSpotId?' active':''}" data-spot="${s.id}" role="button" tabindex="0">
-      ${favBtnHTML(s.id)}
-      <div class="spot-top">
-        <span class="spot-name">${esc(s.name)}</span>
-      </div>
-      <div class="spot-meta">
-        <span class="tag ${meta.tag}">${meta.label}</span>
-        <span class="spot-rating">${starSVG}${s.rating.toFixed(1)}</span>
-        ${biteHTML(spotBiteNow(s))}
-      </div>
-    </div>`;
-  }).join('');
-  list.querySelectorAll('[data-spot]').forEach(el=>{
-    el.addEventListener('click',e=>{
-      if(e.target.closest('[data-fav]')) return;
-      selectSpot(el.dataset.spot,{pan:true});
-    });
-    el.addEventListener('keydown',e=>{
-      if(e.key==='Enter'||e.key===' '){ e.preventDefault(); selectSpot(el.dataset.spot,{pan:true}); }
-    });
-  });
-  list.querySelectorAll('[data-fav]').forEach(b=>{
-    b.addEventListener('click',()=>{
-      const id=b.dataset.fav;
-      favs.has(id) ? favs.delete(id) : favs.add(id);
-      saveFavs(); renderList();
-      if(activeSpotId===id) selectSpot(id,{pan:false});
-      if(typeFilter==='fav') update();
-    });
-  });
-}
-
-/* ================= КАРТОЧКА ТОЧКИ ================= */
-function selectSpot(id,{pan}){
-  const spot = SPOTS.find(s=>s.id===id);
-  if(!spot) return;
-  if(activeSpotId) setPinState(activeSpotId,false);
-  activeSpotId = id;
-  setPinState(id,true);
-  if(pan && map) map.setCenter([spot.lat,spot.lng],11,{duration:600});
-  renderList();
-
-  const meta = TYPE_META[spot.type];
-  const season = spotSeason(spot);
-  const fc = forecast(spot);
-
-  $('#detail').innerHTML = `
-    <button class="detail-close" data-close-detail aria-label="Закрыть карточку точки">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
-    </button>
-    <h3>${esc(spot.name)}</h3>
-    <div class="detail-row">
-      <span class="tag ${meta.tag}">${meta.label}</span>
-      <span class="spot-rating">${starSVG}${spot.rating.toFixed(1)}</span>
-      ${biteHTML(spotBiteNow(spot))}
-    </div>
-    <p>${esc(spot.desc)}</p>
-    <h4>Кто клюёт</h4>
-    <div class="fish-chips">${spot.fish.map(f=>`<span class="fish-chip">${fishSVG}${FISH[f].name}</span>`).join('')}</div>
-    <h4>Прогноз клёва на 7 дней</h4>
-    <div class="forecast" aria-label="Прогноз клёва на неделю">
-      ${fc.map(d=>`<div class="fc-day"><span class="fc-val${d.score<45?' low':''}">${d.score}</span><div class="fc-bar${d.score<45?' low':''}" style="height:${Math.max(6,d.score*0.6)}px" title="${d.date.toLocaleDateString('ru-RU')}: ${d.score}%"></div></div>`).join('')}
-    </div>
-    <div class="fc-labels">${fc.map(d=>`<span>${DAYS[d.date.getDay()]} ${d.date.getDate()}</span>`).join('')}</div>
-    <h4>Сезон активности</h4>
-    <div class="season-bar" aria-label="Активность клёва по месяцам">${season.map((l,m)=>`<i class="${l?'l'+l:''}${m===NOW_MONTH?' now':''}" title="${MONTHS[m]}: ${BITE_LABELS[l]}"></i>`).join('')}</div>
-    <div class="season-labels">${MONTHS.map(m=>`<span>${m[0]}</span>`).join('')}</div>
-    <h4>Снасти и наживка</h4>
-    <p>${esc(spot.gear)}</p>
-    <h4>Координаты</h4>
-    <div class="coords">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>
-      <span>${spot.lat.toFixed(4)}, ${spot.lng.toFixed(4)}</span>
-    </div>
-    <a class="btn btn-gold" href="https://yandex.ru/maps/?rtext=~${spot.lat},${spot.lng}" target="_blank" rel="noopener">Построить маршрут</a>
-  `;
-  $('#detail').classList.add('open');
-  $('#detail').querySelector('[data-close-detail]').addEventListener('click',()=>{
-    $('#detail').classList.remove('open');
-  });
-}
-
-/* ================= КАЛЕНДАРЬ ================= */
-function renderCalendar(){
-  const t = $('#cal-table');
-  const head = `<thead><tr><th scope="col">Рыба</th>${MONTHS.map((m,i)=>`<th scope="col"${i===NOW_MONTH?' class="now-col"':''}>${m}</th>`).join('')}</tr></thead>`;
-  let body = '';
-  for(const cat of ['m','p','w']){
-    body += `<tr class="cat"><td colspan="13">${FISH_CATS[cat]}</td></tr>`;
-    body += Object.values(FISH).filter(f=>f.cat===cat).map(f=>
-      `<tr><td>${f.name}</td>${f.cal.map((l,i)=>`<td><span class="cell${l?' l'+l:''}" title="${MONTHS[i]}: ${BITE_LABELS[l]}"></span></td>`).join('')}</tr>`
-    ).join('');
-  }
-  t.innerHTML = head + `<tbody>${body}</tbody>`;
-}
-
-/* ================= ФИЛЬТРЫ / ПОИСК / ВКЛАДКИ ================= */
-document.querySelectorAll('.chip[data-type]').forEach(chip=>{
-  chip.addEventListener('click',()=>{
-    document.querySelectorAll('.chip[data-type]').forEach(c=>c.classList.remove('active'));
-    chip.classList.add('active');
-    typeFilter = chip.dataset.type;
-    update();
-  });
-});
-const fishSelect = $('#fish-filter');
-for(const cat of ['m','p','w']){
-  const og = document.createElement('optgroup'); og.label = FISH_CATS[cat];
-  Object.entries(FISH).filter(([,f])=>f.cat===cat).forEach(([k,f])=>{
-    const o=document.createElement('option'); o.value=k; o.textContent=f.name; og.appendChild(o);
-  });
-  fishSelect.appendChild(og);
-}
-fishSelect.addEventListener('change',()=>{ fishFilter=fishSelect.value; update(); });
-
-$('#search-form').addEventListener('submit',e=>e.preventDefault());
-$('#search-input').addEventListener('input',e=>{
-  searchQuery = e.target.value.trim().toLowerCase();
-  update();
-});
-
-document.querySelectorAll('.tab[data-view]').forEach(tab=>{
-  tab.addEventListener('click',()=>{
-    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-    tab.classList.add('active');
-    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-    document.getElementById('view-'+tab.dataset.view).classList.add('active');
-    if(tab.dataset.view==='map' && map) setTimeout(()=>map.container.fitToViewport(),50);
-  });
-});
-
-function update(){
-  refreshMarkers();
-  renderList();
-  if(activeSpotId && !visibleSpots().some(s=>s.id===activeSpotId)){
-    $('#detail').classList.remove('open');
-    activeSpotId = null;
-  }
-}
-
-/* ================= INIT ================= */
-applySubState();
-renderList();
-renderCalendar();
 </script>
 </body>
 </html>
