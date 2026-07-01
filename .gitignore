@@ -2,3 +2,10 @@ __pycache__/
 *.pyc
 bot/.env
 bot/venv/
+autoposter/.env
+autoposter/venv/
+autoposter/history.json
+autoposter/autopost.log
+autoposter/tg_to_max_state.json
+autoposter/tg_to_max_user_state.json
+autoposter/max_session/
