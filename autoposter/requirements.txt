@@ -1,0 +1,6 @@
+anthropic>=0.49
+aiogram>=3.4
+apscheduler>=3.10
+pydantic>=2.6
+requests>=2.31
+maxapi-python>=2.3
